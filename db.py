@@ -51,6 +51,19 @@ def media_update(id, title, type, status, notes, cover_image, rating):
     conn.commit()
     return dict(row)
 
+# DELETE function
+def media_destroy_by_id(id):
+    conn = connect_to_db()
+    conn.execute(
+        """
+        DELETE FROM media
+        WHERE id = ?
+        """,
+        (id,),
+    )
+    conn.commit()
+    return {"message": "Book/Show/Movie deleted successfully"}
+
 
 def connect_to_db():
     conn = sqlite3.connect("media.db")

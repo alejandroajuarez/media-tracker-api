@@ -47,3 +47,9 @@ def update(id):
     cover_image = request.form.get("cover_image") or media["cover_image"]
     rating = request.form.get("rating") or media["rating"]
     return db.media_update(id, title, type, status, notes, cover_image, rating)
+
+# DELETE route
+# This route is used to delete a media item by ID
+@app.route("/media/<id>.json", methods=["DELETE"])
+def delete(id):
+    return db.media_destroy_by_id(id)
