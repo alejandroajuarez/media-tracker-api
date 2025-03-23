@@ -9,6 +9,19 @@ def media_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
+def media_create(title, type, status, notes, cover_image, rating):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        INSERT INTO media (title, type, status, notes, cover_image, rating)
+        VALUES (?, ?, ?, ?, ?, ?)
+        RETURNING *;
+        """,
+        (title, type, status, notes, cover_image, rating),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
 
 def connect_to_db():
     conn = sqlite3.connect("media.db")
