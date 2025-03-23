@@ -1,5 +1,6 @@
 import sqlite3
 
+# INDEX function
 def media_all():
     conn = connect_to_db()
     rows = conn.execute(
@@ -9,6 +10,7 @@ def media_all():
     ).fetchall()
     return [dict(row) for row in rows]
 
+# CREATE function
 def media_create(title, type, status, notes, cover_image, rating):
     conn = connect_to_db()
     row = conn.execute(
@@ -18,6 +20,33 @@ def media_create(title, type, status, notes, cover_image, rating):
         RETURNING *;
         """,
         (title, type, status, notes, cover_image, rating),
+    ).fetchone()
+    conn.commit()
+    return dict(row)
+
+# SHOW function
+def media_find_by_id(id):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        SELECT * FROM media 
+        WHERE id = ?
+        """,
+        (id,),
+    ).fetchone()
+    return dict(row)
+
+# UPDATE function
+def media_update(id, title, type, status, notes, cover_image, rating):
+    conn = connect_to_db()
+    row = conn.execute(
+        """
+        UPDATE media
+        SET title = ?, type = ?, status = ?, notes = ?, cover_image = ?, rating = ?
+        WHERE id = ?
+        RETURNING *;
+        """,
+        (title, type, status, notes, cover_image, rating, id),
     ).fetchone()
     conn.commit()
     return dict(row)
