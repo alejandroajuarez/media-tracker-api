@@ -1,7 +1,9 @@
 import db
 from flask import Flask, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 
 
 @app.route('/')
@@ -36,17 +38,19 @@ def show(id):
 # This route is used to update a media item by ID
 @app.route("/media/<id>.json", methods=["PATCH"])
 def update(id):
-    # Find by ID
-    media = db.media_find_by_id(id)
+    data = request.get_json()
 
-    # Back to regular programming
-    title = request.form.get("title") or media["title"]
-    type = request.form.get("type") or media["type"]
-    status = request.form.get("status") or media["status"]
-    notes = request.form.get("notes") or media["notes"]
-    cover_image = request.form.get("cover_image") or media["cover_image"]
-    rating = request.form.get("rating") or media["rating"]
+    media = db.media_find_by_id(id)  # Existing entry
+
+    title = data.get("title") or media["title"]
+    type = data.get("type") or media["type"]
+    status = data.get("status") or media["status"]
+    notes = data.get("notes") or media["notes"]
+    cover_image = data.get("cover_image") or media["cover_image"]
+    rating = data.get("rating") or media["rating"]
+
     return db.media_update(id, title, type, status, notes, cover_image, rating)
+
 
 # DELETE route
 # This route is used to delete a media item by ID
