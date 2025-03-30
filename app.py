@@ -3,12 +3,10 @@ from flask import Flask, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(app,
+     origins=["http://localhost:5173"],  # exact match with frontend
+     supports_credentials=True) 
 
-
-@app.route('/')
-def hello():
-    return 'Hello, World!'
 
 # INDEX route
 # This route is used to get all media items
@@ -20,13 +18,19 @@ def index():
 # This route is used to create a new media item
 @app.route("/media.json", methods=["POST"])
 def create():
-    title = request.form.get("title")
-    type = request.form.get("type")
-    status = request.form.get("status")
-    notes = request.form.get("notes")
-    cover_image = request.form.get("cover_image")
-    rating = request.form.get("rating")
+    data = request.get_json()  # Get JSON data from the Vue form submission
+
+    # Extract fields from the JSON payload
+    title = data.get("title")
+    type = data.get("type")
+    status = data.get("status")
+    notes = data.get("notes")
+    cover_image = data.get("cover_image")
+    rating = data.get("rating")
+
+    # ✅ Call the db function to create the record
     return db.media_create(title, type, status, notes, cover_image, rating)
+
 
 # SHOW route
 # This route is used to get a media item by ID
